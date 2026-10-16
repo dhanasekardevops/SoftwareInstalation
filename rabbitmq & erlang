@@ -1,0 +1,73 @@
+You want to install RabbitMQ 3.13.6 with Erlang 26.2 on Ubuntu 26.04.
+
+The important point is to install compatible, pinned versions rather than Ubuntu's default packages, which may provide newer versions.
+
+We'll set up RabbitMQ as a background service so you can manage it from the terminal and, optionally, through its web-based management GUI.
+
+## Recommended method: Docker on Ubuntu 26.04
+
+RabbitMQ 3.13.6 supports Erlang/OTP 26.0 through 26.2.x, so your requested versions are compatible.
+
+RabbitMQ
+
++1
+
+Docker is a convenient way to run this older RabbitMQ version on Ubuntu 26.04 without changing your system's Erlang installation.
+
+### 1. Install Docker
+
+bash
+```
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl enable --now docker
+```
+
+### 2. Start RabbitMQ 3.13.6 with the management GUI
+
+bash
+```
+sudo docker run -d \
+  --name rabbitmq \
+  --restart unless-stopped \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  rabbitmq:3.13.6-management
+```
+
+This uses the official RabbitMQ image with the management plugin.
+
+RabbitMQ
+
+### 3. Open the GUI
+
+Open your browser and visit:
+
+[http://localhost:15672](<http://localhost:15672?utm_source=chatgpt.com>)
+
+Default login:
+
+- Username: `guest`
+- Password: `guest`
+
+The default guest account is intended for localhost access.
+
+### 4. Verify RabbitMQ and Erlang
+
+Check RabbitMQ:
+
+bash
+```
+sudo docker exec rabbitmq rabbitmqctl version
+```
+
+Check Erlang:
+
+bash
+```
+sudo docker exec rabbitmq erl -noshell -eval 'io:format("~s~n", [erlang:system_info(otp_release)]), halt().'
+```
+
+Important: The Docker image bundles a compatible Erlang version, but the tag alone does not guarantee the exact Erlang patch release. If you specifically require Erlang/OTP 26.2.x, verify the reported version before proceeding.
+
+For native installation directly on Ubuntu, use the [official RabbitMQ installation guide](<https://www.rabbitmq.com/docs/install-debian?utm_source=chatgpt.com>).
