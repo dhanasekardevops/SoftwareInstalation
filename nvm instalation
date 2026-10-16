@@ -1,0 +1,84 @@
+Follow these steps in Ubuntu to install NVM + Node.js + npm.
+
+## Step 1: Open Terminal
+
+Press `Ctrl + Alt + T`.
+
+## Step 2: Install curl and Git
+
+Copy and run:
+
+bash
+```
+sudo apt update
+sudo apt install curl git -y
+```
+
+Enter your Ubuntu password if prompted.
+
+## Step 3: Install NVM
+
+Run the official NVM installer for version `0.40.8`:
+
+bash
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+```
+
+## Step 4: Activate NVM
+
+bash
+```
+source ~/.bashrc
+```
+
+Verify the installation:
+
+bash
+```
+nvm --version
+```
+
+## Step 5: Install Node.js and npm
+
+Install the latest Long-Term Support (LTS) version:
+
+bash
+```
+nvm install --lts
+```
+
+Set it as your default version:
+
+bash
+```
+nvm alias default 'lts/*'
+```
+
+## Step 6: Verify everything
+
+Run these commands separately:
+
+bash
+```
+node -v
+npm -v
+nvm --version
+```
+
+You should see version numbers for all three.
+
+## Step 7: Test npm
+
+Create a test project:
+
+bash
+```
+mkdir my-node-app
+cd my-node-app
+npm init -y
+```
+
+This creates a `package.json` file for your project.
+
+Installation complete! You now have NVM, Node.js, and npm installed on Ubuntu. You can use Terminal or the built-in terminal in Visual Studio Code to run Node.js projects.
