@@ -1,0 +1,171 @@
+# Install Anaconda GUI on Ubuntu 26.04
+
+We'll install the full Anaconda Distribution, which includes Python, `conda`, and Anaconda Navigator. Navigator lets you open Jupyter Notebook and manage Python environments using a graphical interface.
+
+Anaconda
+
++1
+
+Important: Ubuntu 26.04 is newer than many installation tutorials, which use Ubuntu 22.04 or 24.04. The steps below use the standard Linux installer, but I can't confirm compatibility with every Ubuntu 26.04 desktop configuration. If you encounter a GUI or library error, use the troubleshooting steps below.
+
+## Step 1 — Download Anaconda
+
+Download Anaconda (free) for Windows, macOS and Linux | Gizmodo
+
+Official Anaconda download
+
+[Open Anaconda's download page](<https://www.anaconda.com/download?utm_source=chatgpt.com>)
+
+Choose the Linux installer for your computer's architecture. Most standard Intel/AMD Ubuntu PCs use 64-bit x86 (`x86_64`).
+
+After downloading, the file will typically be named something like `Anaconda3-<version>-Linux-x86_64.sh` and will be in your `Downloads` folder.
+
+## Step 2 — Install Anaconda
+
+Open Terminal with `Ctrl + Alt + T`, then run:
+
+bash
+```
+cd ~/Downloads
+ls Anaconda3-*-Linux-x86_64.sh
+```
+
+If the command displays your downloaded installer, run it:
+
+bash
+```
+bash Anaconda3-*-Linux-x86_64.sh
+```
+
+Follow the installer prompts:
+
+1. Press `Enter` to read the license.
+2. Press `Space` to scroll, or continue until the license prompt appears.
+3. Type `yes` to accept the license.
+4. Accept the default location, usually `/home/YOUR_USERNAME/anaconda3`.
+5. If asked whether to initialize Anaconda, answer `yes`.
+
+Wait for installation to finish.
+
+## Step 3 — Initialize Conda
+
+Run:
+
+bash
+```
+source ~/.bashrc
+conda --version
+```
+
+If `conda --version` prints a version number, the command-line installation is working.
+
+If it says `conda: command not found`, try:
+
+bash
+```
+source ~/anaconda3/bin/activate
+conda init bash
+```
+
+Close the terminal, reopen it, and check again.
+
+## Step 4 — Install or update Anaconda Navigator
+
+The full Anaconda Distribution normally includes Navigator. If it is missing, install it with:
+
+bash
+```
+conda activate base
+conda install anaconda::anaconda-navigator
+```
+
+Enter `y` if prompted to confirm the package installation. The package is available for Linux 64-bit systems.
+
+Anaconda
+
++1
+
+## Step 5 — Launch the GUI
+
+Run:
+
+bash
+```
+anaconda-navigator
+```
+
+The first launch may take a little while.
+
+Setup – An Introduction to Machine Learning Applications
+
+Once it opens, you can:
+
+- Launch Jupyter Notebook or JupyterLab.
+- Manage packages and environments.
+- Install and launch supported applications such as Spyder.
+
+## Step 6 — Add Navigator to the Ubuntu Applications menu
+
+If Anaconda Navigator launches successfully but doesn't appear in the Applications menu, create a desktop launcher.
+
+Run:
+
+bash
+```
+mkdir -p ~/.local/share/applications
+
+cat > ~/.local/share/applications/anaconda-navigator.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Anaconda Navigator
+Comment=Manage Python environments and applications
+Exec=/home/REPLACE_WITH_USERNAME/anaconda3/bin/anaconda-navigator
+Terminal=false
+Categories=Development;Science;
+EOF
+```
+
+Important: Replace `REPLACE_WITH_USERNAME` with your actual Ubuntu username. For example, if your home directory is `/home/rahul`, the `Exec` line should be:
+
+ini
+```
+Exec=/home/rahul/anaconda3/bin/anaconda-navigator
+```
+
+Save the file and open the Ubuntu application search by pressing the `Super` key. Search for Anaconda Navigator.
+
+## Step 7 — Troubleshoot if Navigator fails
+
+Try launching it from a terminal so you can see any error messages:
+
+bash
+```
+conda activate base
+anaconda-navigator
+```
+
+If it fails, update Navigator:
+
+bash
+```
+conda update anaconda-navigator
+```
+
+If you see a Qt or graphical library error, don't randomly remove Ubuntu system packages. Copy the exact error message so we can identify the cause.
+
+### Verify your Ubuntu installation
+
+Before troubleshooting any Ubuntu 26.04-specific issue, run these commands and share the output if anything goes wrong:
+
+bash
+```
+lsb_release -a
+uname -m
+echo "$XDG_SESSION_TYPE"
+conda --version
+```
+
+The first three commands identify your Ubuntu release, processor architecture, and graphical session; the last verifies Conda.
+
+[arcca.github.io](<https://arcca.github.io/An-Introduction-to-Machine-Learning-Applications/setup.html>)
