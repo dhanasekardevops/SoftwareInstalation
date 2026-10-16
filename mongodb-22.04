@@ -1,0 +1,197 @@
+Here is the updated document for Ubuntu 22.04 LTS running in VMware, using MongoDB Community Server 8.0 and MongoDB Compass.
+
+# MongoDB Community Server and Compass Installation on Ubuntu 22.04 VMware
+
+## 1. System information
+
+- Operating system: Ubuntu 22.04 LTS (Jammy Jellyfish)
+- Environment: VMware virtual machine
+- Architecture: x86\_64
+- MongoDB version: 8.0
+- MongoDB Compass: Latest compatible version
+
+## 2. Install MongoDB Community Server
+
+### Step 1: Install prerequisites
+
+Open Terminal using `Ctrl + Alt + T` and run:
+
+bash
+```
+sudo apt update
+sudo apt install -y curl gnupg
+```
+
+### Step 2: Import the MongoDB signing key
+
+bash
+```
+curl -fsSL https://pgp.mongodb.com/server-8.0.asc | \
+sudo gpg --dearmor --yes -o /usr/share/keyrings/mongodb-server-8.0.gpg
+```
+
+### Step 3: Add the MongoDB repository
+
+bash
+```
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" | \
+sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+```
+
+### Step 4: Install MongoDB
+
+bash
+```
+sudo apt update
+sudo apt install -y mongodb-org
+```
+
+## 3. Start MongoDB
+
+Start the MongoDB service:
+
+bash
+```
+sudo systemctl start mongod
+```
+
+Enable MongoDB to start automatically when Ubuntu boots:
+
+bash
+```
+sudo systemctl enable mongod
+```
+
+Check the service status:
+
+bash
+```
+sudo systemctl status mongod
+```
+
+Look for:
+
+text
+```
+Active: active (running)
+```
+
+If MongoDB fails to start, inspect the logs:
+
+bash
+```
+sudo journalctl -u mongod -n 50 --no-pager
+```
+
+## 4. Test MongoDB
+
+Check whether the MongoDB shell is installed:
+
+bash
+```
+mongosh --version
+```
+
+Test the database connection:
+
+bash
+```
+mongosh --eval 'db.runCommand({ping: 1})'
+```
+
+A successful test returns a response containing:
+
+text
+```
+{ ok: 1 }
+```
+
+If the command succeeds, MongoDB is running and responding to requests.
+
+## 5. Install MongoDB Compass
+
+Official download
+
+[Download MongoDB Compass for Ubuntu](<https://www.mongodb.com/try/download/compass?utm_source=chatgpt.com>)
+
+1. Open the download page.
+2. Select Linux as the operating system.
+3. Select the `.deb` package.
+4. Choose the appropriate architecture, usually `x64` for an x86\_64 VMware guest.
+5. Download the package.
+
+Open Terminal and install it:
+
+bash
+```
+cd ~/Downloads
+ls mongodb-compass*.deb
+```
+
+Use the actual filename displayed by the previous command:
+
+bash
+```
+sudo apt install ./mongodb-compass_<version>_amd64.deb
+```
+
+Replace the example filename with the downloaded package's exact name.
+
+## 6. Launch MongoDB Compass
+
+Open Compass from the Ubuntu Applications menu, or run:
+
+bash
+```
+mongodb-compass
+```
+
+In the connection field, enter:
+
+text
+```
+mongodb://localhost:27017
+```
+
+Click Connect.
+
+Make sure the MongoDB service is running before connecting.
+
+## 7. Create a database and collection
+
+In MongoDB Compass:
+
+1. Click Create Database.
+2. Enter the database name: `college`
+3. Enter the collection name: `students`
+4. Click Create Database.
+
+You can now insert documents and execute queries using Compass.
+
+## 8. Troubleshooting
+
+If MongoDB does not start, run:
+
+bash
+```
+sudo systemctl status mongod
+sudo journalctl -u mongod -n 50 --no-pager
+```
+
+Verify the Ubuntu version and kernel:
+
+bash
+```
+lsb_release -a
+uname -r
+```
+
+If you encounter a kernel compatibility error, check the exact error message and the official MongoDB issue tracker before applying any workaround. Do not assume a systemd environment override will resolve the problem.
+
+## Official references
+
+- [MongoDB Community Server download](<https://www.mongodb.com/try/download/community?utm_source=chatgpt.com>)
+- [MongoDB installation instructions for Ubuntu](<https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/?utm_source=chatgpt.com>)
+- [MongoDB Compass download](<https://www.mongodb.com/try/download/compass?utm_source=chatgpt.com>)
+
+Important: Ubuntu 22.04 uses the `jammy` repository, not `resolute`. The instructions above use the MongoDB 8.0 repository for Ubuntu 22.04, avoiding the Ubuntu 26.04 repository configuration in your original document. If you specifically need MongoDB 9.0, check its current support and compatibility requirements before installing it.
