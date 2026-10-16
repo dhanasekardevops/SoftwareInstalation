@@ -1,0 +1,188 @@
+I've prepared a document with the MongoDB installation steps, the kernel compatibility error, the temporary workaround, and commands to verify MongoDB and launch Compass on Ubuntu VMware.
+
+Writing
+
+# MongoDB Community Server and Compass Installation on Ubuntu VMware
+
+## 1\. System information
+
+- Operating system: Ubuntu 26.04
+- Environment: VMware virtual machine
+- Architecture: x86\_64
+- Linux kernel: `7.0.0-30-generic`
+- MongoDB version: `9.0.4`
+
+## 2\. Install MongoDB Community Server
+
+### Step 1: Install prerequisites
+
+```
+sudo apt update
+sudo apt install -y curl gnupg
+```
+
+### Step 2: Import the MongoDB signing key
+
+```
+curl -fsSL https://pgp.mongodb.com/server-9.asc | sudo gpg --dearmor --yes -o /usr/share/keyrings/mongodb-server-9.0.gpg
+```
+
+### Step 3: Add the Ubuntu 26.04 repository
+
+```
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/mongodb-server-9.0.gpg] https://repo.mongodb.org/apt/ubuntu resolute/mongodb-org/9.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-9.0.list
+```
+
+### Step 4: Install MongoDB
+
+```
+sudo apt update
+sudo apt install -y mongodb-org
+```
+
+## 3\. Troubleshoot MongoDB startup
+
+### Problem
+
+MongoDB fails to start with this error:
+
+`MongoDB cannot start: Linux kernel versions 6.19.0 through 7.0.13 have a known incompatibility with this version of MongoDB.`
+
+The installed kernel is `7.0.0-30-generic`, which falls within the reported incompatible range.
+
+### Recommended solution
+
+Use a Linux kernel and MongoDB combination that is confirmed to be compatible. Consult the official MongoDB issue tracker:
+
+[https://jira.mongodb.org/browse/SERVER-121912](<https://jira.mongodb.org/browse/SERVER-121912>)
+
+### Temporary workaround to test
+
+A systemd environment override can be tested, but it is not guaranteed to fix the issue.
+
+Create the override directory:
+
+```
+sudo mkdir -p /etc/systemd/system/mongod.service.d
+```
+
+Create the configuration file:
+
+```
+sudo nano /etc/systemd/system/mongod.service.d/override.conf
+```
+
+Add:
+
+```
+[Service]
+Environment="GLIBC_TUNABLES=glibc.pthread.rseq=1"
+```
+
+Save with `Ctrl+O`, press Enter, then exit with `Ctrl+X`.
+
+Reload systemd and restart MongoDB:
+
+```
+sudo systemctl daemon-reload
+sudo systemctl restart mongod
+```
+
+Check the service:
+
+```
+sudo systemctl status mongod
+```
+
+If the service still fails, inspect its logs:
+
+```
+sudo journalctl -u mongod -n 50 --no-pager
+```
+
+Do not assume the workaround succeeded unless the service starts and the connection test passes.
+
+## 4\. Test MongoDB
+
+If the service is running, test the database:
+
+```
+mongosh --eval 'db.runCommand({ping: 1})'
+```
+
+A successful response includes:
+
+```
+{ ok: 1 }
+```
+
+Enable MongoDB to start automatically:
+
+```
+sudo systemctl enable mongod
+```
+
+## 5\. Install MongoDB Compass GUI
+
+Download the official Ubuntu package from:
+
+[https://www.mongodb.com/try/download/compass](<https://www.mongodb.com/try/download/compass>)
+
+Choose the Linux `.deb` package for your architecture.
+
+Open **Files → Downloads**, double-click the downloaded package, and install it if Ubuntu Software offers that option.
+
+Alternatively, use Terminal:
+
+```
+cd ~/Downloads
+ls mongodb-compass*.deb
+```
+
+Install the exact filename shown. For example:
+
+```
+sudo apt install ./mongodb-compass_VERSION_amd64.deb
+```
+
+Replace the example filename with the actual downloaded filename.
+
+## 6\. Open MongoDB Compass
+
+Launch Compass from the Ubuntu Applications menu or run:
+
+```
+mongodb-compass
+```
+
+Enter the connection string:
+
+```
+mongodb://localhost:27017
+```
+
+Click **Connect**.
+
+The MongoDB server must be running before Compass can connect.
+
+## 7\. Create a database
+
+In MongoDB Compass:
+
+1. Click **Create Database**.
+2. Database name: `college`
+3. Collection name: `students`
+4. Click **Create Database**.
+
+You can now use Compass to view collections, insert documents, and run MongoDB queries.
+
+## Official references
+
+- MongoDB Community Server: [https://www.mongodb.com/try/download/community](<https://www.mongodb.com/try/download/community>)
+- MongoDB Compass: [https://www.mongodb.com/try/download/compass](<https://www.mongodb.com/try/download/compass>)
+- MongoDB Ubuntu installation guide: [https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/](<https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/>)
+- Kernel compatibility issue: [https://jira.mongodb.org/browse/SERVER-121912](<https://jira.mongodb.org/browse/SERVER-121912>)
+
+**Important:** MongoDB installation and successful startup are separate steps. In this system, MongoDB 9.0.4 is installed, but startup must be resolved and verified before Compass can connect.
+
+You can copy or edit the document above. If you want a downloadable `.docx` or PDF file, tell me which format you prefer.
